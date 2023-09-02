@@ -7,10 +7,16 @@ from airflow import DAG
 from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
 
+default_args = {
+    'email': ['carsonit01@gmail.com'],
+    'email_on_failure': True
+}
+
 dag = DAG( 
  dag_id="download_rocket_launches", 
  start_date=airflow.utils.dates.days_ago(14), 
- schedule_interval=None, 
+ schedule_interval=None,
+ default_args=default_args, 
  tags=["rocket_picture"]
 )
 
@@ -35,11 +41,12 @@ def _get_pictures():
         for image_url in image_urls:
             try:
                 # Neu data null thi se nhay sang except nen bat buoc de dau
-                response = requests.get(image_url)
+                
 
                 image_filename = image_url.split("/")[-1]
                 target_file = f"/home/ubuntu/Pictures/images/{image_filename}"
-
+                
+                response = requests.get(image_url)
                 with open(target_file, "wb") as f:
                     f.write(response.content)
 
